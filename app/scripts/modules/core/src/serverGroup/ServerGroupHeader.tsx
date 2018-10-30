@@ -51,6 +51,42 @@ export class CloudProviderIcon extends React.Component<IServerGroupHeaderProps> 
   }
 }
 
+export interface ImageListState {
+  expanded: boolean;
+}
+
+export class ImageList extends React.Component<IServerGroupHeaderProps, ImageListState> {
+  private toggle() {
+    this.setState({
+      expanded: !this.state.expanded,
+    });
+  }
+
+  constructor(props: IServerGroupHeaderProps) {
+    super(props);
+
+    this.state = {
+      expanded: false,
+    };
+
+    this.toggle = this.toggle.bind(this);
+  }
+
+  public render() {
+    const { images } = this.props;
+    const { expanded } = this.state;
+
+    return (
+      <>
+        <span>{images.length} containers</span>
+        &nbsp;
+        <span onClick={this.toggle}>{expanded ? 'hide' : 'show'} all</span>
+        <ul>{expanded && images.map(image => <li key={image}>{image}</li>)}</ul>
+      </>
+    );
+  }
+}
+
 export class SequenceAndBuildAndImages extends React.Component<IServerGroupHeaderProps> {
   public render() {
     const { serverGroup, jenkins, images, docker } = this.props;
@@ -69,14 +105,7 @@ export class SequenceAndBuildAndImages extends React.Component<IServerGroupHeade
             {docker.image}:{docker.tag}
           </a>
         )}
-        {!!images &&
-          images.map((image, index) => (
-            <span key={image}>
-              {index > 0 && <br />}
-              {image}
-              {index < images.length - 1 ? ',' : ''}
-            </span>
-          ))}
+        {!!images && <ImageList {...this.props} />}
       </div>
     );
   }
